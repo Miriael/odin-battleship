@@ -37,8 +37,26 @@ const gameboardFactory = () => {
       }
     }
   }
+  const receiveAttack = (y, x) => {
+    if(board[y][x] == '') {
+      board[y][x] = 'O'
+    } else if (typeof board[y][x] === 'object') {
+      board[y][x].hit()
+      board[y][x] = 'X'
+    }
+  }
+  const areAllShipsSunk = () => {
+    for(let row of board){
+      for(let entry of row){
+        if(typeof entry === 'object'){
+          return false
+        }
+      }
+    }
+    return true
+  }
   
-  return { place, board }
+  return { place, receiveAttack, areAllShipsSunk, board }
 }
 
 export { shipFactory, gameboardFactory }
