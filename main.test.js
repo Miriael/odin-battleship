@@ -1,5 +1,17 @@
 import { test, expect, describe } from 'vitest'
-import { shipFactory, gameboardFactory } from './main.js'
+import { shipFactory, gameboardFactory, playerFactory, aiFactory } from './main.js'
+
+function countFunc(board){
+  let counter = 0
+  for(let row of board){
+    for(let entry of row){
+      if(entry == 'O' || entry == 'X'){
+        counter += 1
+      }
+    }
+  }
+  return counter
+}
 
 describe('Ship object factory tests', () => {
   test('Length', () => {
@@ -91,5 +103,40 @@ describe('Gameboard factory tests', () => {
     expect(board.areAllShipsSunk()).toBe(false)
     board.receiveAttack(0, 2)
     expect(board.areAllShipsSunk()).toBe(true)
+  })
+  test('Check if selecting a coordinate that was already fired at is properly recognized', () => {
+    let testShip = shipFactory(3)
+    let board = gameboardFactory()
+    board.place(0, 0, testShip, 'h')
+    board.receiveAttack(0, 0)
+    expect(board.receiveAttack(0, 0)).toBe('Invalid position!')
+  })
+})
+
+describe('Player factory tests', () => {
+  test('Check if active status can be set and read properly', () => {
+    let player = playerFactory(true)
+    expect(player.active).toBe(true)
+    player.active = false
+    expect(player.active).toBe(false)
+  })
+})
+
+describe('AI Factory tests', () => {
+  test('Check if active status can be set and read properly', () => {
+    let ai = aiFactory();
+    expect(ai.active).toBe(false);
+    ai.active = true;
+    expect(ai.active).toBe(true);
+  })
+  test('Check if AI can attack a random space on the board', () => {
+    let ai = aiFactory();
+    let board = gameboardFactory();
+    ai.performAttack(board)
+    ai.performAttack(board)
+    ai.performAttack(board)
+    ai.performAttack(board)
+    ai.performAttack(board)
+    expect(countFunc(board.board)).toBe(5)
   })
 })
