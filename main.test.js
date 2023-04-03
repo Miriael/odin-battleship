@@ -132,11 +132,42 @@ describe('AI Factory tests', () => {
   test('Check if AI can attack a random space on the board', () => {
     let ai = aiFactory();
     let board = gameboardFactory();
-    ai.performAttack(board)
-    ai.performAttack(board)
-    ai.performAttack(board)
-    ai.performAttack(board)
-    ai.performAttack(board)
-    expect(countFunc(board.board)).toBe(5)
+    ai.performAttack(board);
+    ai.performAttack(board);
+    ai.performAttack(board);
+    ai.performAttack(board);
+    ai.performAttack(board);
+    expect(countFunc(board.board)).toBe(5);
+  })
+  test('Check if AI can tell if it made a hit', () => {
+    let ai = aiFactory();
+    let board = gameboardFactory();
+    let ship = shipFactory(3);
+    board.place(0, 0, ship, 'h');
+    ai.performAttack(board, 0, 0);
+    expect(ai.currentHits).toEqual([[[0], [0]]]);
+  })
+  test('Check if AI will follow up on a hit', () => {
+    let ai = aiFactory();
+    let board = gameboardFactory();
+    let ship = shipFactory(3);
+    board.place(0, 0, ship, 'h');
+    ai.performAttack(board, 0, 0);
+    ai.performAttack(board);
+    ai.performAttack(board);
+    expect(ship.isSunk()).toBe(true);
+  })
+  test('Check if AI will follow up on a hit in the most optimal way possible THIS SHOULD FAIL', () => {
+    let ai = aiFactory();
+    let board = gameboardFactory();
+    let ship = shipFactory(7);
+    board.place(4, 4, ship, 'v');
+    ai.performAttack(board, 4, 4);
+    ai.performAttack(board);
+    ai.performAttack(board);
+    ai.performAttack(board);
+    ai.performAttack(board);
+    ai.performAttack(board);
+    expect(ship.isSunk()).toBe(true);
   })
 })
