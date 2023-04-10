@@ -76,7 +76,6 @@ const playerFactory = (active) => {
 const aiFactory = () => {
   //Inherit from player factory
   let currentHits = []
-  let currentOrientation = ''
   const aPlayer = playerFactory(false)
 
   const randomAttack = (board, y, x) => {
@@ -90,50 +89,46 @@ const aiFactory = () => {
     }
     //If coordinate had a ship, add it to the list of currently known hits
     if(typeof board.board[y][x] === 'object'){
-      currentHits.push([[y], [x]])
+      currentHits.push([y, x])
     }
     board.receiveAttack(y, x)
   }
 
   const makeAdjecentTargetsList = (y, x) => {
-    let arr = [[], []];
+    let arr = [];
     if(y == 0){
-      arr[0].push(y+1);
+      arr.push([y+1, x]);
     } else if(y == 9){
-      arr[0].push(y-1);
+      arr.push([y-1, x]);
     } else {
-      arr[0].push(y-1);
-      arr[0].push(y+1);
+      arr.push([y-1, x]);
+      arr.push([y+1, x]);
     }
     if(x == 0){
-      arr[1].push(x+1);
+      arr.push([y, x+1]);
     } else if(x == 9){
-      arr[1].push(x-1);
+      arr.push([y, x-1]);
     } else{
-      arr[1].push(x-1);
-      arr[1].push(x+1);
+      arr.push([y, x-1]);
+      arr.push([y, x+1]);
     }
     return arr;
   }
 
   const targetedAttack = (board, y, x) => {
     let targets = makeAdjecentTargetsList(y, x);
-    for(let entry of targets[0]){
-      if(board.board[entry][x] != 'X' || board.board[entry][x] != 'O'){
-        if(typeof board.board[entry][x] === 'object'){
-          currentHits.push([[entry], [x]])
+    for(let entry of targets){
+      if(board.board[entry[0]][entry[1]] != 'O' && board.board[entry[0]][entry[1]] != 'X'){
+        let fuckface = board.board[entry[0]][entry[1]]
+        if(typeof fuckface === "object"){
+          board.receiveAttack(entry[0], entry[1]);
+          currentHits.pop();
+          currentHits.push([entry[0], entry[1]]);
+          break;
+        } else{
+          board.receiveAttack(entry[0], entry[1]);
+          break;
         }
-        currentOrientation = 'v'
-        board.receiveAttack(entry, x)
-      }
-    }
-    for(let entry of targets[1]){
-      if(board.board[y][entry] != 'X' || board.board[y][entry] != 'O'){
-        if(typeof board.board[y][entry] === 'object'){
-          currentHits.push([[y],[entry]])
-        }
-        currentOrientation = 'h'
-        board.receiveAttack(y, entry)
       }
     }
   }
@@ -147,6 +142,10 @@ const aiFactory = () => {
     } else {
       randomAttack(board, y, x)
     }
+  }
+
+  function main() {
+
   }
 
   return {
